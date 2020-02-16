@@ -5,3 +5,4 @@ htmlcov
 .coverage
 .tox
 .pytest_cache
+.env
