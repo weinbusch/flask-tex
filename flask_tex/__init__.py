@@ -2,6 +2,17 @@ import os
 import tempfile
 from subprocess import run, PIPE, CalledProcessError
 
+from flask import render_template, make_response
+
+
+def render_to_pdf(template_name, filename="flask.pdf", **kwargs):
+    source = render_template(template_name, **kwargs)
+    pdf = run_tex(source)
+    response = make_response(pdf)
+    response.headers["Content-Type"] = "application/pdf"
+    response.headers["Content-Disposition"] = f'filename="{filename}"'
+    return response
+
 
 class TexError(Exception):
     pass

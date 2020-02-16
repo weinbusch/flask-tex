@@ -1,7 +1,9 @@
 import pytest
 from subprocess import CalledProcessError
 
-from flask_tex import run_tex, TexError
+from flask import Flask
+
+from flask_tex import run_tex, TexError, render_to_pdf
 
 
 class TestRunTex:
@@ -36,3 +38,13 @@ class TestRunTex:
         source = "\\documentclass{article}\n" "\\begin{document}\n" "This is a test.\n"
         with pytest.raises(TexError):
             run_tex(source)
+
+
+class TestApp:
+    def test_render_template_to_pdf(self):
+        app = Flask(__name__)
+
+        with app.test_request_context():
+            rv = render_to_pdf("test.tex", foo="bar")
+
+        assert rv.status_code == 200
