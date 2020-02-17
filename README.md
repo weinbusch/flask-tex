@@ -39,23 +39,24 @@ can find it.
 \end{document}
 ```
 
-For lower level access to LaTeX, use `flask.run_tex`:
+For lower level access to LaTeX, use `flask.compile_source`:
+
+```python
+from flask_tex import compile_source
+
+pdf = compile_source(source, command="pdflatex")
+```
+
+where `source` is a string containing a `tex` document and command is a string defining
+the LaTeX command to use for compiling the source. The string should contain any optional
+flags you would like to pass to the LaTeX executable. The default `command` is `pdflatex`, but
+you can supply others, e.g. `latexmk -pdf`. `pdf` is a bytes object containing the pdf file.
+
+`compile_source` runs LaTeX inside a temporary directory. Use `flask_tex.run_tex`
+to circumvent this and run LaTeX in a directory of your choice:
 
 ```python
 from flask_tex import run_tex
 
-pdf = run_tex(source, command="pdflatex")
-```
-
-where `source` is a string containing a `tex` document and command is a string defining
-the LaTeX command to use for compiling the source. The default `command` is `pdflatex`, but
-you can supply others, e.g. `latexmk -pdf`. `pdf` is a bytes object containing the pdf file.
-
-`run_tex` runs LaTeX inside a temporary directory. Use `flask_tex.compile_tex`
-to circumvent this and run LaTeX in a directory of your choice:
-
-```python
-from flask_tex import compile_tex
-
-pdf = compile_tex(source, command="pdflatex", directory="/foo/bar/")
+pdf = run_tex(source, command="pdflatex", directory="/foo/bar/")
 ```
