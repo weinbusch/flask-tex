@@ -2,7 +2,44 @@ import os
 import tempfile
 from subprocess import run, PIPE, CalledProcessError
 
+from markupsafe import Markup
 from flask import render_template, make_response
+
+
+class TexError(Exception):
+    pass
+
+
+class TeX:
+    """TeX Flask extension"""
+
+    def __init__(self, app=None):
+        self.app = app
+        if app:
+            self.init_app(app)
+
+    def init_app(self, app):
+        self.app = app
+
+        app.jinja_env.filters.update(
+            linebreaks=do_linebreaks, latex_escape=do_latex_escape,
+        )
+
+
+def do_linebreaks(value):
+    return value.replace("\n", "\\\\\n")
+
+
+def do_latex_escape(value):
+    return Markup(
+        value.replace("&", "\\&")
+        .replace("$", "\\$")
+        .replace("%", "\\%")
+        .replace("#", "\\#")
+        .replace("_", "\\_")
+        .replace("{", "\\{")
+        .replace("}", "\\}")
+    )
 
 
 def render_to_pdf(template_name, filename="flask.pdf", **kwargs):
@@ -12,10 +49,6 @@ def render_to_pdf(template_name, filename="flask.pdf", **kwargs):
     response.headers["Content-Type"] = "application/pdf"
     response.headers["Content-Disposition"] = f'filename="{filename}"'
     return response
-
-
-class TexError(Exception):
-    pass
 
 
 def compile_source(source, command="pdflatex"):

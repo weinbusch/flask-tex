@@ -60,3 +60,23 @@ from flask_tex import run_tex
 
 pdf = run_tex(source, command="pdflatex", directory="/foo/bar/")
 ```
+
+## Jinja integration
+
+For deeper jinja integration, use `flask_tex` as an extension:
+
+```python
+from flask import Flask
+from flask_tex import TeX
+
+app = Flask(__app__)
+TeX(app)
+```
+
+This adds some LaTeX specific filters to the jinja environment.
+
+- LaTeX escape: `{{ foo | latex_escape }}` where `foo = "&$%#_{}"` renders as `"\\&\\$\\%\\#\\_\\{\\}"`.
+    Danger: Do not use this in a html template, because the escaped string is marked as safe
+    with `Markup`, so code that might be dangerous in html does not get escaped.
+
+- LaTeX linebreaks: The `linebreaks` filter converts `\n` into `\\\\\n`.

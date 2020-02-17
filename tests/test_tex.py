@@ -1,9 +1,9 @@
 import pytest
 from subprocess import CalledProcessError
 
-from flask import Flask
+from flask import Flask, render_template_string, render_template
 
-from flask_tex import compile_source, TexError, render_to_pdf
+from flask_tex import compile_source, TexError, render_to_pdf, TeX
 
 
 class TestRunTex:
@@ -48,3 +48,38 @@ class TestApp:
             rv = render_to_pdf("test.tex", foo="bar")
 
         assert rv.status_code == 200
+
+    def test_no_autoescaping_in_tex_templates(self):
+        app = Flask(__name__)
+
+        with app.test_request_context():
+            rv = render_template("test.tex", foo="This \\& sign will not be escaped")
+
+        assert "This \\& sign will not be escaped" in rv
+
+    def test_newline_filter(self):
+        app = Flask(__name__)
+        TeX(app)
+
+        template_string = "{{ foo | linebreaks }}"
+
+        foo = "bar\nbaz"
+
+        with app.test_request_context():
+            rv = render_template_string(template_string, foo=foo)
+
+        assert rv == "bar\\\\\nbaz"
+
+    def test_latex_escape(self):
+        app = Flask(__name__)
+        TeX(app)
+
+        template_string = "{{ foo | latex_escape }}"
+        foo = "&$%#_{}"
+
+        with app.test_request_context():
+            rv = render_template_string(template_string, foo=foo)
+
+        assert (
+            rv == "\\&\\$\\%\\#\\_\\{\\}"
+        )  # This works because latex_escape marks the escaped string as safe with `Markup`
