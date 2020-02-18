@@ -1,0 +1,31 @@
+\documentclass{article}
+\usepackage{tabularx}
+
+\title{Using \LaTeX{} with Flask should be a lot of fun}
+
+\begin{document}
+\maketitle
+\section{ {{- foo -}} }
+
+This is your request data:
+
+\begin{table}[h]
+    \begin{tabularx}{\textwidth}{|l|X|}
+        \hline Url & {{ request.url | latex_escape }} \\
+        \hline Method & {{ request.method | latex_escape }} \\
+        \hline Access route & {{ ' > '.join(request.access_route) | latex_escape }} \\
+        {% for key, value in request.headers.items() %}
+        \hline
+        {{ key | latex_escape }} &
+        {%- if key == 'Accept' -%}
+        {{ ', '.join(value.split(',')) | latex_escape }}
+        {%- else -%}
+        {{ value | latex_escape }}
+        {%- endif -%}
+        \\
+        {% endfor %}
+        \hline
+    \end{tabularx}
+\end{table}
+
+\end{document}
