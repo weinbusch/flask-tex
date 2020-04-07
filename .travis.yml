@@ -1,0 +1,10 @@
+language: python
+addons:
+  apt:
+    packages:
+      - texlive-latex-base
+      - latexmk
+install:
+  - pip install tox-travis
+script:
+  - tox
