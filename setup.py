@@ -16,6 +16,6 @@ setup(
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
     install_requires=["flask>=1.1.1"],
-    python_requires=">=3.6.8",
+    python_requires="~=3.6",
     package_data={"": ["*.tex"]},
 )
