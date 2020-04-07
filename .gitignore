@@ -2,6 +2,7 @@ __pycache__
 .venv
 .vscode
 htmlcov
+*.egg-info/
 .coverage
 .tox
 .pytest_cache
